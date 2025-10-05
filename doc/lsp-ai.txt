@@ -1,0 +1,147 @@
+*lsp-ai.txt*                                     For Neovim version 0.5 and newer
+
+==============================================================================
+CONTENTS                                                *lsp-ai-nvim-contents*
+
+  1. Introduction.......................................*lsp-ai-nvim-introduction*
+  2. Installation.....................................*lsp-ai-nvim-installation*
+  3. Usage....................................................*lsp-ai-nvim-usage*
+  4. Configuration......................................*lsp-ai-nvim-configuration*
+  5. Commands...............................................*lsp-ai-nvim-commands*
+  6. Keymaps................................................*lsp-ai-nvim-keymaps*
+
+==============================================================================
+INTRODUCTION                                        *lsp-ai-nvim-introduction*
+
+This plugin provides a client for lsp-ai, a language server that provides
+AI-powered functionality. It allows you to get code completions and generate
+code snippets based on the context of your current buffer.
+
+The plugin currently supports the following features:
+- Code generation via the `LSPAIGenerate` command.
+- Inline code suggestions.
+
+==============================================================================
+INSTALLATION                                      *lsp-ai-nvim-installation*
+
+First, you need to install the `lsp-ai` language server. You can do this by
+running the following command:
+>
+  cargo install lsp-ai
+<
+Then, you can install this plugin using your favorite plugin manager.
+
+Using `lazy.nvim`:
+>
+  {
+    "SilasMarvin/lsp-ai.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("lsp_ai").setup()
+    end,
+  }
+<
+
+==============================================================================
+USAGE                                                     *lsp-ai-nvim-usage*
+
+The plugin will automatically start the `lsp-ai` language server if it is
+installed and configured correctly. Once the server is running, you can use the
+`LSPAIGenerate` command to generate code.
+
+When you call `LSPAIGenerate`, the plugin will send a request to the `lsp-ai`
+server with the current buffer's content and the cursor position. The server
+will then return a code snippet that you can insert into your buffer.
+
+The plugin also provides inline suggestions as you type. These suggestions
+will appear as virtual text after your cursor. You can accept the suggestion
+by pressing `<CR>` or reject it by pressing `<Esc>`.
+
+==============================================================================
+CONFIGURATION                                   *lsp-ai-nvim-configuration*
+
+You can configure the plugin by passing a table to the `setup` function. The
+following options are available:
+
+`autostart`                                     *lsp-ai-nvim-autostart*
+  Type: `boolean`
+  Default: `true`
+  Description: Whether to automatically start the `lsp-ai` server.
+
+`debounce_ms`                                   *lsp-ai-nvim-debounce_ms*
+  Type: `number`
+  Default: `1000`
+  Description: The debounce time in milliseconds for inline suggestions.
+
+`server`                                        *lsp-ai-nvim-server*
+  Type: `table`
+  Default: `nil`
+  Description: A table of server options to override the default server
+  configuration. See the `lsp-ai` documentation for a list of available
+  options.
+
+`generation`                                    *lsp-ai-nvim-generation*
+  Type: `table`
+  Default: (see below)
+  Description: Configuration for code generation.
+  >
+    generation = {
+      model = "model1",
+      parameters = {
+        max_tokens = 128,
+        max_context = 1024,
+        messages = { ... },
+      },
+    }
+  <
+
+`inline_completion`                             *lsp-ai-nvim-inline_completion*
+  Type: `table`
+  Default: (see below)
+  Description: Configuration for inline completion.
+  >
+    inline_completion = {
+      completions_per_second = 1,
+    }
+  <
+
+Example configuration:
+>
+  require("lsp_ai").setup({
+    autostart = true,
+    debounce_ms = 500,
+    server = {
+      models = {
+        model1 = {
+          type = "open_ai",
+          chat_endpoint = "https://api.openai.com/v1/chat/completions",
+          model = "gpt-3.5-turbo",
+          auth_token_env_var_name = "OPENAI_API_KEY",
+        },
+      },
+    },
+  })
+<
+
+==============================================================================
+COMMANDS                                            *lsp-ai-nvim-commands*
+
+`LSPAIGenerate`                                     *LSPAIGenerate*
+  Description: Generate a code snippet from the `lsp-ai` server.
+
+==============================================================================
+KEYMAPS                                             *lsp-ai-nvim-keymaps*
+
+The following keymaps are available when an inline suggestion is visible:
+
+`<CR>`
+  Description: Accept the current suggestion.
+
+`<Esc>`
+  Description: Reject the current suggestion.
+
+You can customize these keymaps by creating your own autocmd for the
+`LspAttach` event.
+
+==============================================================================
+vim:tw=78:ts=8:sw=2:sts=2:et:ft=help:norl:
